@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Julius Caesar Project</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dark: #8b6914;
+    --crimson: #8b1a1a;
+    --crimson-light: #c0392b;
+    --marble-dark: #0f0e0c;
+    --marble-mid: #1a1814;
+    --marble-light: #252219;
+    --stone: #3a3528;
+    --parchment: #f5e6c8;
+    --parchment-dark: #d4b896;
+    --cream: #faf3e0;
+    --text-main: #e8d9b5;
+    --text-dim: #a89060;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--marble-dark);
+    color: var(--text-main);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── MARBLE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      repeating-linear-gradient(
+        105deg,
+        transparent 0px,
+        transparent 40px,
+        rgba(200,168,80,.03) 40px,
+        rgba(200,168,80,.03) 41px
+      ),
+      repeating-linear-gradient(
+        15deg,
+        transparent 0px,
+        transparent 60px,
+        rgba(255,255,255,.015) 60px,
+        rgba(255,255,255,.015) 61px
+      );
+    pointer-events: none;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 3rem;
+    background: linear-gradient(180deg, rgba(10,9,7,.97) 0%, rgba(10,9,7,.0) 100%);
+    border-bottom: 1px solid rgba(201,168,76,.15);
+  }
+
+  nav .logo {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: .85rem;
+    letter-spacing: .12em;
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  nav ul { list-style: none; display: flex; gap: 2.5rem; }
+  nav ul a {
+    font-family: 'Cinzel', serif;
+    font-size: .72rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color .3s;
+  }
+  nav ul a:hover { color: var(--gold-light); }
+
+  /* ── HERO ── */
+  #hero {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 6rem;
+    overflow: hidden;
+  }
+
+  #hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 40%, rgba(139,26,26,.25) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 80% at 80% 80%, rgba(201,168,76,.08) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 20% 20%, rgba(201,168,76,.06) 0%, transparent 60%);
+  }
+
+  .laurel-row {
+    display: flex; align-items: center; gap: 1.2rem;
+    margin-bottom: 2rem;
+    animation: fadeDown .8s ease both;
+  }
+  .laurel-row span {
+    font-family: 'Cinzel', serif;
+    font-size: .7rem;
+    letter-spacing: .35em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+  }
+  .laurel {
+    color: var(--gold);
+    font-size: 1.4rem;
+    opacity: .7;
+  }
+
+  h1.title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2.8rem, 7vw, 6.5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    color: var(--gold-light);
+    text-shadow: 0 0 80px rgba(201,168,76,.3), 0 4px 20px rgba(0,0,0,.8);
+    animation: fadeUp .9s ease .1s both;
+    letter-spacing: .02em;
+  }
+  h1.title em {
+    font-style: italic;
+    color: var(--crimson-light);
+    display: block;
+    font-size: .9em;
+  }
+
+  .hero-sub {
+    margin-top: 1.5rem;
+    font-size: 1.2rem;
+    font-style: italic;
+    color: var(--text-dim);
+    max-width: 560px;
+    animation: fadeUp .9s ease .25s both;
+  }
+
+  .hero-divider {
+    margin: 2.5rem 0;
+    display: flex; align-items: center; gap: 1rem;
+    animation: fadeUp .9s ease .35s both;
+  }
+  .hero-divider::before, .hero-divider::after {
+    content: ''; display: block; width: 80px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold));
+  }
+  .hero-divider::after { background: linear-gradient(90deg, var(--gold), transparent); }
+  .hero-divider .ornament { color: var(--gold); font-size: 1.2rem; }
+
+  .hero-meta {
+    display: flex; gap: 3rem;
+    font-family: 'Cinzel', serif;
+    font-size: .7rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    animation: fadeUp .9s ease .45s both;
+  }
+  .hero-meta span { display: flex; flex-direction: column; align-items: center; gap: .4rem; }
+  .hero-meta strong { color: var(--gold); font-size: .95rem; }
+
+  /* ── SECTION BASE ── */
+  section { position: relative; z-index: 1; }
+
+  .section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 6rem 2.5rem;
+  }
+
+  .section-label {
+    font-family: 'Cinzel', serif;
+    font-size: .65rem;
+    letter-spacing: .45em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--gold-dark), transparent);
+    max-width: 120px;
+  }
+
+  h2.section-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+    color: var(--gold-light);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  /* ── SUMMARY ── */
+  #summary { background: linear-gradient(180deg, var(--marble-dark) 0%, var(--marble-mid) 100%); }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-top: 3rem;
+  }
+
+  .summary-text p { color: var(--text-main); margin-bottom: 1.2rem; }
+  .summary-text p:first-child::first-letter {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 3.5rem;
+    float: left;
+    line-height: .8;
+    margin: .1em .15em 0 0;
+    color: var(--gold);
+  }
+
+  .acts-list { display: flex; flex-direction: column; gap: .8rem; }
+  .act-card {
+    border: 1px solid rgba(201,168,76,.2);
+    border-left: 3px solid var(--crimson);
+    padding: 1rem 1.5rem;
+    background: rgba(201,168,76,.03);
+    transition: background .3s, border-color .3s;
+    cursor: default;
+  }
+  .act-card:hover { background: rgba(201,168,76,.07); border-left-color: var(--gold); }
+  .act-card h4 {
+    font-family: 'Cinzel', serif;
+    font-size: .8rem;
+    letter-spacing: .15em;
+    color: var(--gold);
+    margin-bottom: .3rem;
+  }
+  .act-card p { font-size: .92rem; color: var(--text-dim); margin: 0; }
+
+  /* ── CHARACTERS ── */
+  #characters { background: var(--marble-mid); }
+
+  .char-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .char-card {
+    position: relative;
+    padding: 2rem 1.8rem;
+    border: 1px solid rgba(201,168,76,.15);
+    background: rgba(0,0,0,.3);
+    overflow: hidden;
+    transition: transform .3s, box-shadow .3s;
+  }
+  .char-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0; transition: opacity .3s;
+  }
+  .char-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+  .char-card:hover::before { opacity: 1; }
+
+  .char-initial {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2.8rem;
+    color: var(--gold-dark);
+    line-height: 1;
+    margin-bottom: .8rem;
+    opacity: .5;
+  }
+  .char-name {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    letter-spacing: .1em;
+    color: var(--gold-light);
+    margin-bottom: .2rem;
+  }
+  .char-role {
+    font-family: 'Cinzel', serif;
+    font-size: .65rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--crimson-light);
+    margin-bottom: .8rem;
+  }
+  .char-desc { font-size: .92rem; color: var(--text-dim); line-height: 1.6; }
+  .char-quote {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(201,168,76,.15);
+    font-style: italic;
+    font-size: .88rem;
+    color: var(--text-dim);
+    opacity: .8;
+  }
+
+  /* ── THEMES ── */
+  #themes { background: linear-gradient(180deg, var(--marble-mid) 0%, var(--marble-light) 100%); }
+
+  .themes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .theme-card {
+    display: flex; gap: 1.5rem;
+    padding: 2rem;
+    border: 1px solid rgba(201,168,76,.12);
+    background: rgba(0,0,0,.25);
+    transition: background .3s;
+  }
+  .theme-card:hover { background: rgba(201,168,76,.05); }
+
+  .theme-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+    width: 3.5rem; height: 3.5rem;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(201,168,76,.3);
+    background: rgba(201,168,76,.05);
+  }
+  .theme-body h3 {
+    font-family: 'Cinzel', serif;
+    font-size: .9rem;
+    letter-spacing: .12em;
+    color: var(--gold);
+    margin-bottom: .5rem;
+  }
+  .theme-body p { font-size: .92rem; color: var(--text-dim); margin: 0; }
+
+  /* ── LITERARY DEVICES ── */
+  #devices { background: var(--marble-light); }
+
+  .devices-intro { max-width: 680px; color: var(--text-dim); margin-bottom: 3rem; }
+
+  .device-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(201,168,76,.2); margin-bottom: 2.5rem; }
+  .tab-btn {
+    background: none; border: none; cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: .7rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: .8rem 1.8rem;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color .3s, border-color .3s;
+  }
+  .tab-btn.active { color: var(--gold-light); border-bottom-color: var(--gold); }
+  .tab-btn:hover:not(.active) { color: var(--text-main); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .device-examples { display: flex; flex-direction: column; gap: 1.5rem; }
+  .device-example {
+    padding: 1.5rem 2rem;
+    border-left: 2px solid var(--gold-dark);
+    background: rgba(0,0,0,.25);
+  }
+  .device-example h4 {
+    font-family: 'Cinzel', serif;
+    font-size: .75rem;
+    letter-spacing: .2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: .5rem;
+  }
+  .device-example blockquote {
+    font-style: italic;
+    color: var(--parchment-dark);
+    margin-bottom: .5rem;
+    font-size: 1rem;
+  }
+  .device-example p { font-size: .9rem; color: var(--text-dim); margin: 0; }
+
+  /* ── COMMENTARY ── */
+  #commentary { background: linear-gradient(180deg, var(--marble-light) 0%, var(--marble-dark) 100%); }
+
+  .commentary-block {
+    max-width: 760px;
+    margin: 3rem auto 0;
+  }
+  .commentary-block p {
+    color: var(--text-main);
+    margin-bottom: 1.5rem;
+    font-size: 1.05rem;
+  }
+  .pull-quote {
+    padding: 2rem 3rem;
+    border-top: 1px solid rgba(201,168,76,.4);
+    border-bottom: 1px solid rgba(201,168,76,.4);
+    margin: 3rem 0;
+    text-align: center;
+  }
+  .pull-quote p {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    color: var(--gold-light);
+    line-height: 1.5;
+    font-style: italic;
+  }
+  .pull-quote cite {
+    display: block;
+    margin-top: .8rem;
+    font-family: 'Cinzel', serif;
+    font-size: .7rem;
+    letter-spacing: .2em;
+    color: var(--text-dim);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative; z-index: 1;
+    background: var(--marble-dark);
+    border-top: 1px solid rgba(201,168,76,.15);
+    padding: 3rem 2.5rem;
+    text-align: center;
+  }
+  footer .footer-ornament {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.5rem;
+    color: var(--gold-dark);
+    margin-bottom: 1rem;
+  }
+  footer p {
+    font-family: 'Cinzel', serif;
+    font-size: .65rem;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── SCROLL PROGRESS ── */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 2px;
+    background: linear-gradient(90deg, var(--crimson), var(--gold));
+    z-index: 200; width: 0%; transition: width .1s linear;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 820px) {
+    nav { padding: 1rem 1.5rem; }
+    nav ul { display: none; }
+    .summary-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .char-grid { grid-template-columns: 1fr 1fr; }
+    .themes-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .char-grid { grid-template-columns: 1fr; }
+    .section-inner { padding: 4rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav>
+  <a href="#hero" class="logo">Iulius Caesar</a>
+  <ul>
+    <li><a href="#summary">Play</a></li>
+    <li><a href="#characters">Characters</a></li>
+    <li><a href="#themes">Themes</a></li>
+    <li><a href="#devices">Devices</a></li>
+    <li><a href="#commentary">Commentary</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="laurel-row">
+    <span class="laurel">❧</span>
+    <span>William Shakespeare · c. 1599</span>
+    <span class="laurel">❧</span>
+  </div>
+
+  <h1 class="title">
+    The Tragedy of<br>
+    <em>Julius Caesar</em>
+  </h1>
+
+  <p class="hero-sub">
+    "Cowards die many times before their deaths; the valiant never taste of death but once."
+  </p>
+
+  <div class="hero-divider"><span class="ornament">✦</span></div>
+
+  <div class="hero-meta">
+    <span><strong>5</strong> Acts</span>
+    <span><strong>18</strong> Scenes</span>
+    <span><strong>3</strong> Factions</span>
+    <span><strong>44 BC</strong> Rome</span>
+  </div>
+</section>
+
+<!-- ── SUMMARY ── -->
+<section id="summary">
+  <div class="section-inner">
+    <div class="section-label reveal">I. The Play</div>
+    <h2 class="section-title reveal">Synopsis & Act Summaries</h2>
+
+    <div class="summary-grid">
+      <div class="summary-text reveal">
+        <p>
+          Shakespeare's <em>Julius Caesar</em> is a masterwork of political tragedy, set
+          in ancient Rome against the backdrop of a republic on the edge of transformation.
+          The play opens with Caesar returning triumphant from war — loved by the masses,
+          yet feared by the Senate as a tyrant in the making.
+        </p>
+        <p>
+          A conspiracy forms in the shadows. Cassius, envious and calculating,
+          manipulates the noble Brutus into believing that Caesar's ambition is a
+          <em>metaphorical serpent's egg</em> that must be crushed before it hatches.
+          The conspirators strike on the Ides of March — a day the soothsayer had warned
+          against — and Caesar falls at the foot of Pompey's statue, crying out
+          <em>"Et tu, Bruté?"</em>
+        </p>
+        <p>
+          Yet the assassination does not bring peace. Mark Antony's funeral oration —
+          a masterpiece of <strong>rhetorical irony</strong> — turns the Roman mob against
+          the conspirators. Civil war erupts. At Philippi, the forces of Antony and
+          Octavius crush Brutus and Cassius, who both die by their own hands, their
+          idealism ultimately weaponized against them.
+        </p>
+      </div>
+
+      <div class="acts-list reveal">
+        <div class="act-card">
+          <h4>Act I — The Conspiracy Takes Root</h4>
+          <p>Caesar's triumph stirs fear. Cassius plants seeds of doubt in Brutus; omens fill the sky on a stormy Roman night.</p>
+        </div>
+        <div class="act-card">
+          <h4>Act II — The Die is Cast</h4>
+          <p>Brutus agonizes in his orchard; Portia pleads for his secrets. The conspirators finalize their plan; Caesar ignores Calpurnia's warnings.</p>
+        </div>
+        <div class="act-card">
+          <h4>Act III — The Ides of March</h4>
+          <p>Caesar is murdered in the Senate. Antony's electrifying funeral speech ignites the mob. Rome descends into chaos.</p>
+        </div>
+        <div class="act-card">
+          <h4>Act IV — The Tide Turns</h4>
+          <p>The Second Triumvirate rises. Caesar's ghost haunts Brutus at Sardis; the armies march toward Philippi.</p>
+        </div>
+        <div class="act-card">
+          <h4>Act V — Philippi & the Fall</h4>
+          <p>Battle, misunderstanding, and despair. Cassius falls on his sword; Brutus follows — the "noblest Roman of them all."</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CHARACTERS ── -->
+<section id="characters">
+  <div class="section-inner">
+    <div class="section-label reveal">II. Characterization</div>
+    <h2 class="section-title reveal">The Principal Players</h2>
+
+    <div class="char-grid">
+
+      <div class="char-card reveal">
+        <div class="char-initial">C</div>
+        <div class="char-name">Julius Caesar</div>
+        <div class="char-role">Dictator of Rome</div>
+        <p class="char-desc">Ambitious, proud, and tragically blind to his own hubris. Caesar is both a symbol of great leadership and of the dangers of unchecked power. His <em>allusion</em> to the Colossus of Rhodes captures his self-image perfectly.</p>
+        <div class="char-quote">"I am constant as the northern star." — III.i</div>
+      </div>
+
+      <div class="char-card reveal">
+        <div class="char-initial">B</div>
+        <div class="char-name">Marcus Brutus</div>
+        <div class="char-role">The Tragic Idealist</div>
+        <p class="char-desc">The moral center and tragic hero of the play. Brutus acts from principle, not jealousy — which makes his betrayal of Caesar all the more devastating. His internal conflict is Shakespeare's deepest study of conscience.</p>
+        <div class="char-quote">"Not that I loved Caesar less, but that I loved Rome more." — III.ii</div>
+      </div>
+
+      <div class="char-card reveal">
+        <div class="char-initial">A</div>
+        <div class="char-name">Mark Antony</div>
+        <div class="char-role">Caesar's Loyal Champion</div>
+        <p class="char-desc">A brilliant orator who uses <em>rhetorical irony</em> to dismantle Brutus's justifications before a grieving crowd. His funeral speech is perhaps the finest example of persuasion in all of literature.</p>
+        <div class="char-quote">"Friends, Romans, countrymen, lend me your ears." — III.ii</div>
+      </div>
+
+      <div class="char-card reveal">
+        <div class="char-initial">C</div>
+        <div class="char-name">Cassius</div>
+        <div class="char-role">The Architect of Conspiracy</div>
+        <p class="char-desc">Driven by envy and a keen political mind. Cassius understands human nature — he knows exactly how to manipulate Brutus's honor into becoming a weapon. A study in <em>personification</em> of political cynicism.</p>
+        <div class="char-quote">"The fault, dear Brutus, is not in our stars, but in ourselves." — I.ii</div>
+      </div>
+
+      <div class="char-card reveal">
+        <div class="char-initial">P</div>
+        <div class="char-name">Portia</div>
+        <div class="char-role">Voice of Reason & Love</div>
+        <p class="char-desc">One of Shakespeare's most compelling female characters. Portia demands to share Brutus's burden as his partner, not merely his wife. Her self-inflicted wound symbolizes the physical cost of secrets kept in silence.</p>
+        <div class="char-quote">"I have made strong proof of my constancy." — II.i</div>
+      </div>
+
+      <div class="char-card reveal">
+        <div class="char-initial">C</div>
+        <div class="char-name">Calpurnia</div>
+        <div class="char-role">Caesar's Prescient Wife</div>
+        <p class="char-desc">Her prophetic nightmares are ignored by a Caesar who conflates courage with stubbornness. Calpurnia embodies the voice of reason silenced by masculine pride — a timeless <em>irony</em> the play never lets us forget.</p>
+        <div class="char-quote">"When beggars die, there are no comets seen." — II.ii</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── THEMES ── -->
+<section id="themes">
+  <div class="section-inner">
+    <div class="section-label reveal">III. Major Themes</div>
+    <h2 class="section-title reveal">Ideas That Endure</h2>
+
+    <div class="themes-grid">
+
+      <div class="theme-card reveal">
+        <div class="theme-icon">⚖</div>
+        <div class="theme-body">
+          <h3>Ambition & Power</h3>
+          <p>The play relentlessly asks: when does ambition become tyranny? Caesar's rise mirrors modern leaders who accumulate power in democracies — from Napoleon Bonaparte to more recent political figures who test the limits of constitutional governance.</p>
+        </div>
+      </div>
+
+      <div class="theme-card reveal">
+        <div class="theme-icon">🗡</div>
+        <div class="theme-body">
+          <h3>Betrayal & Honor</h3>
+          <p>Brutus believes betrayal can be honorable if it serves the greater good — a moral paradox still debated today in whistleblower cases, wartime allegiances, and political defections. The play asks whether a good man can commit an evil act for noble reasons.</p>
+        </div>
+      </div>
+
+      <div class="theme-card reveal">
+        <div class="theme-icon">📣</div>
+        <div class="theme-body">
+          <h3>Rhetoric & Manipulation</h3>
+          <p>Antony's funeral speech demonstrates how language can be weaponized. The play is a warning about the power of demagoguery — speaking to emotions rather than reason. In the age of social media, this theme has never felt more urgent or prescient.</p>
+        </div>
+      </div>
+
+      <div class="theme-card reveal">
+        <div class="theme-icon">☀</div>
+        <div class="theme-body">
+          <h3>Fate vs. Free Will</h3>
+          <p>Omens abound — the soothsayer, Calpurnia's dreams, the strange weather — yet every character insists on exercising their own will. Shakespeare leaves us wondering: were these events inevitable, or was each choice freely made and freely destructive?</p>
+        </div>
+      </div>
+
+      <div class="theme-card reveal">
+        <div class="theme-icon">🏛</div>
+        <div class="theme-body">
+          <h3>The Republic vs. Autocracy</h3>
+          <p>The conspirators claim to kill Caesar to save the Republic. Yet their act accelerates its very collapse. This paradox echoes through history — the French Revolution, the fall of the Weimar Republic, countless modern coups conducted in democracy's name.</p>
+        </div>
+      </div>
+
+      <div class="theme-card reveal">
+        <div class="theme-icon">👁</div>
+        <div class="theme-body">
+          <h3>Appearance vs. Reality</h3>
+          <p>Cassius uses forged letters; Brutus presents murder as liberation; Antony pretends to praise the conspirators while enflaming the crowd against them. Almost nothing is as it appears in Rome — a <em>hyperbole</em> for the deceptive nature of political life.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── LITERARY DEVICES ── -->
+<section id="devices">
+  <div class="section-inner">
+    <div class="section-label reveal">IV. Language & Craft</div>
+    <h2 class="section-title reveal">Literary Devices</h2>
+    <p class="devices-intro reveal">
+      Shakespeare enriches <em>Julius Caesar</em> with a dense web of figurative language.
+      These devices don't merely decorate the text — they deepen characterization, advance
+      themes, and create layers of meaning that reward close reading.
+    </p>
+
+    <div class="device-tabs reveal">
+      <button class="tab-btn active" onclick="showTab('metaphor')">Metaphor</button>
+      <button class="tab-btn" onclick="showTab('irony')">Irony</button>
+      <button class="tab-btn" onclick="showTab('rhetoric')">Rhetoric</button>
+      <button class="tab-btn" onclick="showTab('other')">More Devices</button>
+    </div>
+
+    <div id="tab-metaphor" class="tab-content active">
+      <div class="device-examples">
+        <div class="device-example">
+          <h4>Serpent Metaphor</h4>
+          <blockquote>"It is the bright day that brings forth the adder, and that craves wary walking." — II.i</blockquote>
+          <p>Brutus compares Caesar to a serpent that hasn't yet hatched — justifying preemptive assassination. This extended metaphor frames the murder as pest control rather than treason, revealing how Brutus psychologically distances himself from the moral weight of his action.</p>
+        </div>
+        <div class="device-example">
+          <h4>Colossus Metaphor</h4>
+          <blockquote>"Why, man, he doth bestride the narrow world like a Colossus." — I.ii</blockquote>
+          <p>Cassius's comparison of Caesar to the Colossus of Rhodes — one of the Seven Wonders — illustrates Caesar's overwhelming dominance. The metaphor also serves Cassius's manipulative purpose: making Brutus feel small and subordinate by contrast.</p>
+        </div>
+        <div class="device-example">
+          <h4>Tide Metaphor</h4>
+          <blockquote>"There is a tide in the affairs of men which, taken at the flood, leads on to fortune." — IV.iii</blockquote>
+          <p>Brutus uses this striking metaphor to advocate for immediate battle at Philippi. The image of a tide — powerful, brief, and irreversible — captures the tragic urgency of political timing, and foreshadows the catastrophe that will follow from hesitation.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-irony" class="tab-content">
+      <div class="device-examples">
+        <div class="device-example">
+          <h4>Dramatic Irony — Caesar's Death</h4>
+          <blockquote>"The Ides of March are come." / "Ay, Caesar, but not gone." — III.i</blockquote>
+          <p>The audience knows Caesar is about to be murdered. This brief exchange with the soothsayer crackles with dramatic irony — Caesar's casual dismissal of the prophecy makes his death feel all the more inevitable and tragic.</p>
+        </div>
+        <div class="device-example">
+          <h4>Verbal Irony — Antony's Speech</h4>
+          <blockquote>"For Brutus is an honorable man." — III.ii</blockquote>
+          <p>Antony repeats this phrase with increasing sarcasm throughout the funeral oration. What begins as sincere praise gradually becomes devastating condemnation — each repetition more ironic than the last. It is one of literature's greatest examples of verbal irony deployed as a rhetorical weapon.</p>
+        </div>
+        <div class="device-example">
+          <h4>Situational Irony — The Assassination Backfires</h4>
+          <blockquote>The conspirators kill Caesar to save the Republic — and destroy it.</blockquote>
+          <p>The deepest irony of the play: the men who murder Caesar in the name of Roman freedom trigger the civil war that ends the Republic entirely. Their noble intentions produce the exact outcome they sought to prevent — a pattern that echoes throughout revolutionary history.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-rhetoric" class="tab-content">
+      <div class="device-examples">
+        <div class="device-example">
+          <h4>Ethos — Establishing Credibility</h4>
+          <blockquote>"I am no orator, as Brutus is; but, as you know me all, a plain blunt man." — III.ii</blockquote>
+          <p>Antony uses <em>ethos</em> brilliantly by presenting himself as humble and unpolished — the opposite of a manipulator. By disclaiming rhetorical skill, he makes the crowd trust him more, ironically making his manipulation far more effective.</p>
+        </div>
+        <div class="device-example">
+          <h4>Pathos — Emotional Appeal</h4>
+          <blockquote>"You all did love him once, not without cause: what cause withholds you then to mourn for him?" — III.ii</blockquote>
+          <p>Antony's entire funeral speech is a masterclass in <em>pathos</em>. He displays Caesar's wounds, reads his will, and weeps openly — turning rational citizens into an emotional mob. The rhetorical strategy is devastatingly effective and deeply relevant to modern political demagoguery.</p>
+        </div>
+        <div class="device-example">
+          <h4>Anaphora — Repetition for Effect</h4>
+          <blockquote>"Who is here so base... Who is here so rude... Who is here so vile..." — III.ii</blockquote>
+          <p>Brutus's speech employs <em>anaphora</em> — the repetition of a phrase at the beginning of successive clauses — to draw the crowd into his logic. Each rhetorical question dares the audience to object, building a momentum of implied consent that temporarily wins Rome over.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-other" class="tab-content">
+      <div class="device-examples">
+        <div class="device-example">
+          <h4>Personification</h4>
+          <blockquote>"Cowardice dies many deaths before its time." — paraphrase, II.ii</blockquote>
+          <p>Shakespeare personifies abstract concepts — Caesar speaks of Cowardice as a creature that suffers and dies repeatedly. This gives moral abstractions a physical weight, making philosophical arguments feel visceral and immediate to the audience.</p>
+        </div>
+        <div class="device-example">
+          <h4>Allusion — Historical &amp; Mythological</h4>
+          <blockquote>"Et tu, Bruté? Then fall, Caesar!" — III.i</blockquote>
+          <p>The play is itself a historical allusion to real Roman events. Within the text, Shakespeare has characters allude to Greek myths, the gods, and Roman history to ground the drama in a world larger than itself — connecting individual tragedy to civilizational forces.</p>
+        </div>
+        <div class="device-example">
+          <h4>Simile &amp; Hyperbole</h4>
+          <blockquote>"Cry 'Havoc!' and let slip the dogs of war." — III.i</blockquote>
+          <p>Antony's famous line combines simile (war as unleashed dogs) with hyperbolic energy to convey the uncontrollable destruction the assassination will unleash. The image is vivid, animal, and terrifying — perfectly capturing the chaos Antony intends to incite.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── COMMENTARY ── -->
+<section id="commentary">
+  <div class="section-inner">
+    <div class="section-label reveal">V. My Commentary</div>
+    <h2 class="section-title reveal">Why This Play Still Matters</h2>
+
+    <div class="commentary-block">
+      <p class="reveal">
+        Shakespeare wrote <em>Julius Caesar</em> around 1599, at a moment when England's aging Queen
+        Elizabeth had no heir and political succession was a matter of national anxiety. His Roman
+        setting gave him the freedom to explore dangerous questions — about tyranny, about the
+        limits of political violence, about what happens when idealism collides with reality — without
+        risking the censor's blade.
+      </p>
+
+      <div class="pull-quote reveal">
+        <p>"The abuse of greatness is when it disjoins remorse from power."</p>
+        <cite>— Marcus Brutus, Act II, Scene i</cite>
+      </div>
+
+      <p class="reveal">
+        What makes Brutus a tragic hero rather than simply a villain is precisely his idealism.
+        He doesn't kill Caesar for personal gain — he kills him because he genuinely believes he is
+        saving Rome. This is the play's most modern insight: that the most dangerous political actors
+        are often those most convinced of their own righteousness. The parallel to modern history is
+        unavoidable — from Robespierre in revolutionary France to countless 20th-century
+        revolutionaries who destroyed what they claimed to be saving.
+      </p>
+
+      <p class="reveal">
+        Antony's funeral speech remains perhaps the most instructive lesson in rhetoric ever written.
+        By performing humility, appealing to emotion, and repeating a phrase until it reverses
+        meaning, Antony demonstrates how a crowd can be moved from grief to murder in the span of
+        a few hundred words. In an age of 24-hour news cycles and social media virality, this has
+        never felt more urgent. Shakespeare was not merely writing history — he was writing a warning.
+      </p>
+
+      <p class="reveal">
+        Ultimately, <em>Julius Caesar</em> refuses to assign simple moral judgment. Caesar had real
+        ambitions that threatened the Republic. Brutus had real honor that led him to catastrophe.
+        Antony had real loyalty that curdled into cynical manipulation. The play insists that human
+        beings — and human history — are more complicated than any single narrative can contain.
+        That is what makes it a masterpiece, and why it belongs not only in the past, but in every
+        present moment that follows.
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-ornament">✦ SPQR ✦</div>
+  <p>The Julius Caesar Project &nbsp;·&nbsp; English Literature &nbsp;·&nbsp; Due April 7th</p>
+  <p style="margin-top:.5rem; opacity:.5;">Choice 12: Technology — Website</p>
+</footer>
+
+<script>
+  // Scroll progress bar
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const scrolled = doc.scrollTop / (doc.scrollHeight - doc.clientHeight);
+    document.getElementById('progress-bar').style.width = (scrolled * 100) + '%';
+  });
+
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), 80 * i);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Tabs
+  function showTab(name) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+</script>
+</body>
+</html>
