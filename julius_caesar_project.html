@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Julius Caesar — A Literary Study</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Spectral:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#1a1610; --ink-mid:#2e2820; --ink-pale:#3d3528;
+  --gold:#b8963c; --gold-lt:#d4b05a; --gold-dk:#7a6020;
+  --red:#7a1f1f; --red-lt:#a63030;
+  --parch:#f2e6cc; --parch-lt:#faf4e6; --parch-dk:#d6c49a;
+  --text:#2a2215; --text-dim:#6b5a3e; --text-mid:#4a3d28;
+  --white:#fdfaf4;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--parch-lt);color:var(--text);font-family:'Spectral',Georgia,serif;font-size:18px;line-height:1.75;overflow-x:hidden}
+#prog{position:fixed;top:0;left:0;height:3px;background:var(--gold);z-index:999;width:0;transition:width .08s}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(250,244,230,.97);border-bottom:1px solid var(--parch-dk);display:flex;align-items:center;justify-content:space-between;padding:.85rem 3rem;box-shadow:0 2px 20px rgba(0,0,0,.08)}
+.nav-brand{font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:.2em;color:var(--text-mid);text-decoration:none}
+nav ul{list-style:none;display:flex;gap:2rem}
+nav a{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;border-bottom:1px solid transparent;transition:color .25s,border-color .25s}
+nav a:hover{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* HERO */
+#hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(170deg,#1a140a 0%,#2d2010 50%,#1a140a 100%);padding:8rem 2rem 6rem;overflow:hidden}
+#hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(184,150,60,.1),transparent 70%);pointer-events:none}
+.hero-eyebrow{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold-dk);margin-bottom:1.8rem;animation:riseUp .7s ease both}
+h1{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(3rem,8vw,7rem);line-height:1;color:var(--parch);text-shadow:0 4px 40px rgba(0,0,0,.6);animation:riseUp .8s ease .1s both}
+h1 span{color:var(--gold-lt);font-style:italic;display:block}
+.hero-rule{width:120px;height:1px;background:var(--gold-dk);margin:2.5rem auto;animation:riseUp .8s ease .2s both}
+.hero-tagline{font-family:'Spectral',serif;font-style:italic;font-size:1.1rem;color:var(--parch-dk);max-width:520px;animation:riseUp .8s ease .3s both}
+.hero-scroll{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-dk);animation:pulse 2s ease infinite}
+
+/* SECTIONS */
+section{position:relative;z-index:1}
+.section-inner{max-width:1080px;margin:0 auto;padding:6rem 2.5rem}
+.eyebrow{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.45em;text-transform:uppercase;color:var(--gold-dk);margin-bottom:.8rem}
+h2{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(1.8rem,4vw,2.8rem);color:var(--ink);margin-bottom:1rem;line-height:1.15}
+.section-lead{font-size:1rem;color:var(--text-dim);max-width:660px;margin-bottom:3rem}
+.importance-box{border-left:4px solid var(--gold);background:rgba(184,150,60,.07);padding:1.8rem 2.2rem;margin-bottom:3.5rem;font-style:italic;color:var(--text-mid);font-size:.95rem}
+.importance-box strong{display:block;font-style:normal;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold-dk);margin-bottom:.5rem}
+
+/* CHARACTER SECTION */
+#characters{background:var(--white)}
+.char-tabs{display:flex;gap:0;border-bottom:2px solid var(--parch-dk);margin-bottom:3rem;flex-wrap:wrap}
+.ctab{background:none;border:none;cursor:pointer;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.9rem 1.6rem;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .25s,border-color .25s}
+.ctab.on{color:var(--red);border-bottom-color:var(--red)}
+.ctab:hover:not(.on){color:var(--text)}
+.char-panel{display:none}
+.char-panel.on{display:grid;grid-template-columns:1fr 2fr;gap:3rem;align-items:start}
+.char-left{position:sticky;top:6rem}
+.char-emblem{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--ink) 0%,var(--ink-pale) 100%);border:1px solid rgba(184,150,60,.25);margin-bottom:1.5rem}
+.char-emblem span{font-family:'Playfair Display',serif;font-size:6rem;font-weight:900;color:var(--gold);opacity:.3;font-style:italic}
+.char-name{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--ink);margin-bottom:.2rem}
+.char-role{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--red-lt);margin-bottom:1rem}
+.char-quote-side{border-top:1px solid var(--parch-dk);padding-top:1rem;font-style:italic;font-size:.88rem;color:var(--text-dim)}
+.char-right h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--ink);margin:1.8rem 0 .5rem}
+.char-right h3:first-child{margin-top:0}
+.char-right p{color:var(--text-mid);margin-bottom:.9rem;font-size:.95rem}
+.device-tag{display:inline-block;background:rgba(184,150,60,.12);border:1px solid rgba(184,150,60,.3);color:var(--gold-dk);font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;padding:.2rem .6rem;margin:.1rem;border-radius:2px}
+.modern-link{display:flex;gap:1rem;align-items:flex-start;padding:1.2rem 1.5rem;margin-top:1rem;background:rgba(122,31,31,.05);border-left:3px solid var(--red)}
+.modern-link .ml-label{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red-lt);white-space:nowrap;margin-top:.15rem;min-width:90px}
+.modern-link p{margin:0;font-size:.9rem;color:var(--text-mid)}
+
+/* SCENE SECTION */
+#scenes{background:var(--parch-lt)}
+.scene-list{display:flex;flex-direction:column;gap:1px}
+.scene-item{border:1px solid var(--parch-dk);background:var(--white);overflow:hidden}
+.scene-header{display:flex;align-items:center;gap:1.5rem;padding:1.2rem 1.8rem;cursor:pointer;transition:background .2s}
+.scene-header:hover{background:rgba(184,150,60,.05)}
+.scene-num{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.2em;color:var(--gold-dk);min-width:80px}
+.scene-title-text{font-family:'Playfair Display',serif;font-size:1rem;color:var(--ink);flex:1}
+.scene-chevron{color:var(--gold-dk);font-size:.85rem;transition:transform .3s}
+.scene-item.open .scene-chevron{transform:rotate(180deg)}
+.scene-body{display:none;padding:0 1.8rem 1.8rem;border-top:1px solid var(--parch-dk)}
+.scene-item.open .scene-body{display:block}
+.scene-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2rem;padding-top:1.5rem}
+.scene-col h4{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-dk);margin-bottom:.6rem}
+.scene-col p{font-size:.92rem;color:var(--text-mid)}
+.scene-quote{margin-top:1.2rem;padding:1rem 1.5rem;border-left:2px solid var(--gold);font-style:italic;background:rgba(184,150,60,.05);font-size:.93rem;color:var(--text-mid)}
+
+/* DICTION SECTION */
+#diction{background:var(--white)}
+.diction-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem}
+.diction-card{border:1px solid var(--parch-dk);padding:2rem;background:var(--parch-lt);transition:box-shadow .3s}
+.diction-card:hover{box-shadow:0 8px 32px rgba(0,0,0,.09)}
+.diction-card-tag{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-dk);display:flex;align-items:center;gap:.8rem;margin-bottom:1rem}
+.diction-card-tag::after{content:'';flex:1;height:1px;background:var(--parch-dk)}
+.diction-card h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--ink);margin-bottom:.8rem}
+.diction-example{background:var(--white);border:1px solid var(--parch-dk);padding:1rem 1.2rem;margin:1rem 0;font-style:italic;font-size:.92rem;color:var(--text-mid)}
+.diction-example cite{display:block;font-style:normal;font-size:.72rem;font-family:'Cinzel',serif;letter-spacing:.1em;color:var(--gold-dk);margin-top:.3rem}
+.diction-card p{font-size:.92rem;color:var(--text-mid);margin-bottom:.7rem}
+.diction-card p:last-child{margin-bottom:0}
+
+/* RESOURCES */
+#resources{background:var(--parch-lt)}
+.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2rem}
+.res-card{padding:1.8rem;border:1px solid var(--parch-dk);background:var(--white);text-decoration:none;transition:box-shadow .25s,transform .25s;display:flex;flex-direction:column;gap:.6rem}
+.res-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.1);transform:translateY(-3px)}
+.res-type{font-family:'Cinzel',serif;font-size:.57rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold-dk)}
+.res-card h3{font-family:'Playfair Display',serif;font-size:1rem;color:var(--ink);line-height:1.3}
+.res-card p{font-size:.87rem;color:var(--text-dim);margin:0}
+.res-arrow{color:var(--gold-dk);margin-top:auto;font-size:.85rem}
+
+/* FOOTER */
+footer{position:relative;z-index:1;background:var(--ink);text-align:center;padding:3rem 2rem;border-top:2px solid var(--gold-dk)}
+footer p{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-dk)}
+footer p+p{margin-top:.5rem;opacity:.5}
+
+/* ANIMATIONS */
+@keyframes riseUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
+.reveal.vis{opacity:1;transform:translateY(0)}
+
+@media(max-width:820px){
+  nav{padding:.85rem 1.5rem} nav ul{display:none}
+  .char-panel.on{grid-template-columns:1fr} .char-left{position:static}
+  .scene-cols{grid-template-columns:1fr;gap:1rem}
+  .diction-grid{grid-template-columns:1fr}
+  .res-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){.section-inner{padding:4rem 1.5rem}.res-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+
+<nav>
+  <a href="#hero" class="nav-brand">Julius Caesar — Literary Study</a>
+  <ul>
+    <li><a href="#characters">Characters</a></li>
+    <li><a href="#scenes">Scenes</a></li>
+    <li><a href="#diction">Diction</a></li>
+    <li><a href="#resources">Resources</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-eyebrow">William Shakespeare · c. 1599 · A Literary Study</div>
+  <h1>The Tragedy of<span>Julius Caesar</span></h1>
+  <div class="hero-rule"></div>
+  <p class="hero-tagline">"The fault, dear Brutus, is not in our stars, but in ourselves, that we are underlings."</p>
+  <div class="hero-scroll">Scroll to Explore ↓</div>
+</section>
+
+<!-- ═══════════════════════════════════ I. CHARACTER ANALYSIS ═══════════════════════════════════ -->
+<section id="characters">
+<div class="section-inner">
+  <p class="eyebrow reveal">I. Character Analysis</p>
+  <h2 class="reveal">Who Are These People — And Why Do They Matter?</h2>
+  <div class="importance-box reveal">
+    <strong>Why This Section Matters</strong>
+    Character analysis is central to understanding Julius Caesar because Shakespeare deliberately gives every major figure moral complexity. No character is simply "good" or "evil" — each embodies a contradiction that forces us to ask difficult questions about power, loyalty, and conscience. These questions are not ancient history; they recur in every political era.
+  </div>
+
+  <div class="char-tabs reveal">
+    <button class="ctab on" onclick="showChar('brutus',this)">Brutus</button>
+    <button class="ctab" onclick="showChar('caesar',this)">Caesar</button>
+    <button class="ctab" onclick="showChar('antony',this)">Antony</button>
+    <button class="ctab" onclick="showChar('cassius',this)">Cassius</button>
+    <button class="ctab" onclick="showChar('portia',this)">Portia</button>
+  </div>
+
+  <!-- BRUTUS -->
+  <div class="char-panel on" id="char-brutus">
+    <div class="char-left">
+      <div class="char-emblem"><span>B</span></div>
+      <div class="char-name">Marcus Brutus</div>
+      <div class="char-role">Tragic Hero · Conspirator</div>
+      <div class="char-quote-side">"Not that I loved Caesar less, but that I loved Rome more." — III.ii</div>
+    </div>
+    <div class="char-right">
+      <h3>Who Is He?</h3>
+      <p>Brutus is the play's moral center and tragic hero. A senator respected for his integrity, he joins the conspiracy not out of jealousy or ambition, but from a genuine belief that Caesar's rising power will destroy the Roman Republic. This is what makes him tragic: he commits a terrible act for noble reasons, and the consequences destroy him.</p>
+      <h3>Key Device: Extended Metaphor</h3>
+      <p>In Act II, Scene i, Brutus debates the assassination in a soliloquy, comparing Caesar to a serpent's egg: <em>"And therefore think him as a serpent's egg / Which, hatched, would as his kind grow mischievous, / And kill him in the shell."</em> The metaphor does psychological work — it allows Brutus to speak of assassination as pest management, at a safe emotional remove from what he is actually planning. It also uses <em>personification</em> (danger given a creature's body) and <em>hyperbole</em> (treating a possibility as a certainty).</p>
+      <span class="device-tag">Extended Metaphor</span><span class="device-tag">Personification</span><span class="device-tag">Hyperbole</span>
+      <h3>Fatal Flaw: Idealism Without Realism</h3>
+      <p>Brutus makes three catastrophic decisions: he spares Antony, allows him to speak at the funeral, and marches to Philippi against military advice. Each stems from the same flaw — he believes everyone operates by his own code of honor. He cannot fathom that Antony will use the speech as a weapon.</p>
+      <div class="modern-link">
+        <div class="ml-label">Historical Connection</div>
+        <p>Brutus mirrors figures like Leon Trotsky — revolutionaries of genuine principle who help destroy a system only to find the new world has no place for idealists. His tragedy is that of every reformer who underestimates the ruthlessness of their allies.</p>
+      </div>
+      <div class="modern-link">
+        <div class="ml-label">Literary Parallel</div>
+        <p>Brutus echoes Hamlet in his philosophical hesitation — both men act on moral conviction and spend the rest of the work trying to reconcile the gap between their self-image and their deed.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAESAR -->
+  <div class="char-panel" id="char-caesar">
+    <div class="char-left">
+      <div class="char-emblem"><span>C</span></div>
+      <div class="char-name">Julius Caesar</div>
+      <div class="char-role">Dictator · Martyr · Symbol</div>
+      <div class="char-quote-side">"I am constant as the northern star, of whose true-fixed and resting quality there is no fellow in the firmament." — III.i</div>
+    </div>
+    <div class="char-right">
+      <h3>Who Is He?</h3>
+      <p>Caesar is simultaneously a real person and a political symbol — and Shakespeare keeps those two things in tension. As a man, he is superstitious, vain, and physically frail. As a symbol, he is the idea of Rome itself — which is why his murder causes civil war rather than peace.</p>
+      <h3>Key Device: Simile, Allusion, and Dramatic Irony</h3>
+      <p>Caesar compares himself to the Northern Star — <em>"I am constant as the northern star"</em> — a classical <em>simile</em> that alludes to Polaris, the fixed navigational point by which ancient sailors charted their course. He claims to be the unchanging moral axis of Rome. The <em>dramatic irony</em> is devastating: he speaks these words moments before being stabbed. He is the least "constant" thing in the play.</p>
+      <span class="device-tag">Simile</span><span class="device-tag">Allusion</span><span class="device-tag">Dramatic Irony</span>
+      <h3>Was He a Tyrant?</h3>
+      <p>Shakespeare leaves this unresolved. We never see Caesar actually abuse power on stage. The conspirators' case rests on what <em>might</em> happen, not what has. This ambiguity is deliberate — the audience must decide whether the assassination was justified, and Shakespeare refuses to answer.</p>
+      <div class="modern-link">
+        <div class="ml-label">Historical Connection</div>
+        <p>The real Caesar (100–44 BC) crossed the Rubicon in 49 BC and was given dictatorial powers before his murder. Shakespeare draws from Plutarch's <em>Lives</em>, which itself interpreted Caesar through a political lens — raising the question of how history shapes biography.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANTONY -->
+  <div class="char-panel" id="char-antony">
+    <div class="char-left">
+      <div class="char-emblem"><span>A</span></div>
+      <div class="char-name">Mark Antony</div>
+      <div class="char-role">Orator · Avenger · Politician</div>
+      <div class="char-quote-side">"Cry 'Havoc!' and let slip the dogs of war." — III.i</div>
+    </div>
+    <div class="char-right">
+      <h3>Who Is He?</h3>
+      <p>Antony is introduced as a loyal friend the conspirators dismiss as "but a limb of Caesar." This is their greatest miscalculation. Antony is a master rhetorician who understands people at an emotional level, and once unleashed he transforms grief into revolution with a single speech.</p>
+      <h3>The Funeral Speech: Three Rhetorical Strategies</h3>
+      <p><strong>Ethos</strong> — He establishes credibility by saying "I am no orator as Brutus is; but a plain blunt man," making the crowd trust him precisely <em>because</em> he seems not to be trying to persuade them.</p>
+      <p><strong>Pathos</strong> — He displays Caesar's wounds, reads his will, and weeps openly — bypassing reason entirely and speaking directly to emotion.</p>
+      <p><strong>Verbal Irony + Anaphora</strong> — "For Brutus is an honorable man" is repeated until it becomes sarcasm; each repetition more devastating than the last. Repetition transforms praise into condemnation.</p>
+      <span class="device-tag">Ethos</span><span class="device-tag">Pathos</span><span class="device-tag">Verbal Irony</span><span class="device-tag">Anaphora</span>
+      <div class="modern-link">
+        <div class="ml-label">Modern Connection</div>
+        <p>Antony's speech is studied in political science today as a template for demagoguery. His technique of performing vulnerability while wielding it as a weapon is used by political figures across history. It is a warning about how democracies can be moved not by argument but by performance.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASSIUS -->
+  <div class="char-panel" id="char-cassius">
+    <div class="char-left">
+      <div class="char-emblem"><span>C</span></div>
+      <div class="char-name">Cassius</div>
+      <div class="char-role">Conspirator · Manipulator · Pragmatist</div>
+      <div class="char-quote-side">"The fault, dear Brutus, is not in our stars, but in ourselves." — I.ii</div>
+    </div>
+    <div class="char-right">
+      <h3>Who Is He?</h3>
+      <p>Cassius is the engine of the conspiracy — he plants its seeds, recruits its members, forges letters to manipulate Brutus. Yet he is more than a villain. He has genuine political fears, genuine affection for Brutus, and a bitter self-awareness about his own envy that Brutus entirely lacks.</p>
+      <h3>Key Devices: Allusion & Personification</h3>
+      <p>In I.ii, Cassius uses <em>allusion</em> to the legendary Brutus who expelled Rome's last king — implying the current Brutus should live up to his ancestor's name. He <em>personifies</em> Rome as a woman who "groans under this age's yoke," giving his abstract political argument physical, emotional weight. His series of <em>rhetorical questions</em> builds a trap — each one daring Brutus to admit he feels lesser than Caesar.</p>
+      <span class="device-tag">Allusion</span><span class="device-tag">Personification</span><span class="device-tag">Rhetorical Questions</span>
+      <div class="modern-link">
+        <div class="ml-label">Literary Parallel</div>
+        <p>Cassius functions as a dark mirror to Iago in <em>Othello</em> — both manipulate a noble figure through calibrated insinuation. The difference is that Cassius has real political grievances, where Iago's are personal. That distinction makes Cassius's manipulation harder to dismiss as simply evil.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PORTIA -->
+  <div class="char-panel" id="char-portia">
+    <div class="char-left">
+      <div class="char-emblem"><span>P</span></div>
+      <div class="char-name">Portia</div>
+      <div class="char-role">Brutus's Wife · Voice of Conscience</div>
+      <div class="char-quote-side">"I have made strong proof of my constancy, giving myself a voluntary wound here, in the thigh." — II.i</div>
+    </div>
+    <div class="char-right">
+      <h3>Who Is She?</h3>
+      <p>Portia appears in only two scenes but carries enormous moral weight. She is the only character who sees Brutus clearly — who knows something is wrong and demands to be trusted with it. Her self-inflicted wound is a radical act of proof: she demonstrates her strength physically because she has no political voice.</p>
+      <h3>Key Devices: Symbolism & Hyperbole</h3>
+      <p>The wound functions as <em>symbolism</em> — she makes internal suffering external and visible. It also embodies <em>hyperbole</em>: the extremity of the act stands in for the extremity of what she is excluded from. Shakespeare uses her body as a site where the play's themes — secrecy, loyalty, the cost of political life — converge.</p>
+      <span class="device-tag">Symbolism</span><span class="device-tag">Hyperbole</span><span class="device-tag">Pathos</span>
+      <div class="modern-link">
+        <div class="ml-label">Modern Connection</div>
+        <p>Portia's situation — a highly capable woman whose intelligence is acknowledged by her husband but who is excluded from formal power — mirrors the position of women in virtually every political era. Her tragedy is not that she is weak, but that the system offers no legitimate channel for her strength.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ═══════════════════════════════════ II. SCENE ANALYSIS ═══════════════════════════════════ -->
+<section id="scenes">
+<div class="section-inner">
+  <p class="eyebrow reveal">II. Scene Analysis</p>
+  <h2 class="reveal">The Scenes That Define the Play</h2>
+  <div class="importance-box reveal">
+    <strong>Why Scene Analysis Matters</strong>
+    Scene analysis examines how Shakespeare constructs dramatic momentum — how location, action, and language work together to create meaning. The scenes below are "hinge points" on which the entire play pivots. Understanding them reveals how Shakespeare builds tension, plants irony, and controls exactly what the audience knows versus what the characters know.
+  </div>
+
+  <div class="scene-list reveal">
+
+    <div class="scene-item">
+      <div class="scene-header" onclick="toggleScene(this)">
+        <span class="scene-num">Act I · ii</span>
+        <span class="scene-title-text">Cassius Recruits Brutus — "The Seduction Scene"</span>
+        <span class="scene-chevron">▾</span>
+      </div>
+      <div class="scene-body">
+        <div class="scene-cols">
+          <div class="scene-col"><h4>What Happens</h4><p>While Caesar watches the Lupercal festival, Cassius draws Brutus aside and begins the long process of turning him against Caesar — using personal memories, rhetorical questions, and allusions to Roman history to frame Caesar's power as an insult to every senator.</p></div>
+          <div class="scene-col"><h4>Dramatic Significance</h4><p>Without Brutus, the conspiracy has no moral cover — it is merely jealous politicians. Cassius knows this, which is why this scene is essentially a long act of manipulation dressed as a conversation between friends. It is the play's true beginning.</p></div>
+          <div class="scene-col"><h4>Modern / Historical Connection</h4><p>The scene mirrors countless historical moments where political actors are recruited through flattery and identity rather than argument. Cassius's strategy — "you are better than this, and Caesar is making you small" — is the template of every populist who has told a group their circumstances are someone else's fault.</p></div>
+        </div>
+        <div class="scene-quote">"Men at some time are masters of their fates: the fault, dear Brutus, is not in our stars, but in ourselves." — <em>Cassius invokes free will while engineering Brutus's choice — a foundational dramatic irony.</em></div>
+      </div>
+    </div>
+
+    <div class="scene-item">
+      <div class="scene-header" onclick="toggleScene(this)">
+        <span class="scene-num">Act II · i</span>
+        <span class="scene-title-text">Brutus's Orchard — "The Soliloquy of Justification"</span>
+        <span class="scene-chevron">▾</span>
+      </div>
+      <div class="scene-body">
+        <div class="scene-cols">
+          <div class="scene-col"><h4>What Happens</h4><p>In his garden at night, Brutus wrestles alone with the decision to join the conspiracy. He moves from hesitation to resolve through an internal argument built on metaphor. The conspirators arrive; the plan is finalized. Portia pleads for honesty.</p></div>
+          <div class="scene-col"><h4>Dramatic Significance</h4><p>This is the moral fulcrum of the play — Shakespeare shows us how a good person talks himself into a terrible act. The logic is almost convincing, which is precisely the point. We feel the seductiveness of Brutus's reasoning before witnessing its catastrophic consequences.</p></div>
+          <div class="scene-col"><h4>Historical Connection</h4><p>Brutus's reasoning — that preemptive action against a dangerous leader is justified by what <em>might</em> happen — echoes logic used to justify the 2003 invasion of Iraq, acts of revolutionary violence premised on future fear, and countless "lesser evil" political calculations throughout history.</p></div>
+        </div>
+        <div class="scene-quote">"It is the bright day that brings forth the adder, and that craves wary walking." — <em>Extended metaphor: Caesar as an unhatched serpent, danger personified to make murder feel like prudence.</em></div>
+      </div>
+    </div>
+
+    <div class="scene-item">
+      <div class="scene-header" onclick="toggleScene(this)">
+        <span class="scene-num">Act III · i</span>
+        <span class="scene-title-text">The Assassination — "The Ides of March"</span>
+        <span class="scene-chevron">▾</span>
+      </div>
+      <div class="scene-body">
+        <div class="scene-cols">
+          <div class="scene-col"><h4>What Happens</h4><p>Caesar arrives at the Senate, dismisses the soothsayer, and is surrounded by conspirators under the pretense of a petition. He is stabbed 23 times. Antony flees but returns, shakes the murderers' hands in false reconciliation, and is granted permission to speak at the funeral.</p></div>
+          <div class="scene-col"><h4>Dramatic Significance</h4><p>The stabbing takes less than 40 lines. Shakespeare is more interested in what follows: the conspirators' attempt to frame murder as liberation ("Liberty! Freedom! Tyranny is dead!") and Antony's private soliloquy — only the audience hears his true intentions, creating devastating dramatic irony.</p></div>
+          <div class="scene-col"><h4>Literary Connection</h4><p>Shakespeare drew this scene from Plutarch's <em>Lives</em> but transformed dry historical reportage into visceral drama. Brutus's suggestion that conspirators bathe their swords in Caesar's blood as a symbol of unity is one of the play's most disturbing ironies — a cleansing ritual for an act of violence.</p></div>
+        </div>
+        <div class="scene-quote">"Et tu, Bruté? — Then fall, Caesar!" — <em>Latin allusion and historical irony; the moment idealism meets its moral reality.</em></div>
+      </div>
+    </div>
+
+    <div class="scene-item">
+      <div class="scene-header" onclick="toggleScene(this)">
+        <span class="scene-num">Act III · ii</span>
+        <span class="scene-title-text">The Forum — "Two Speeches, Two Worlds"</span>
+        <span class="scene-chevron">▾</span>
+      </div>
+      <div class="scene-body">
+        <div class="scene-cols">
+          <div class="scene-col"><h4>What Happens</h4><p>Brutus addresses the crowd in prose — logical, measured, structured. The crowd is won over. He leaves before Antony speaks, a fatal miscalculation. Antony's verse speech begins deferentially and ends with the mob howling for the conspirators' blood.</p></div>
+          <div class="scene-col"><h4>Dramatic Significance</h4><p>Shakespeare's deliberate choice of <em>prose for Brutus and verse for Antony</em> is itself a literary device. Prose represents rational argument; verse represents emotional appeal. The crowd responds to music, not logic. Brutus's speech is correct; Antony's is effective.</p></div>
+          <div class="scene-col"><h4>Modern Connection</h4><p>This scene is studied in political communications as a template for demagoguery. The mechanisms Antony uses — credibility-by-denial, emotional spectacle, the will as a prop — are the same mechanisms used in modern political rallies. Marshall McLuhan's "the medium is the message" is illustrated perfectly here.</p></div>
+        </div>
+        <div class="scene-quote">"For Brutus is an honorable man — so are they all, all honorable men." — <em>Anaphora + verbal irony: repetition transforms sincere praise into withering accusation.</em></div>
+      </div>
+    </div>
+
+    <div class="scene-item">
+      <div class="scene-header" onclick="toggleScene(this)">
+        <span class="scene-num">Act V · v</span>
+        <span class="scene-title-text">The Death of Brutus — "The Noblest Roman"</span>
+        <span class="scene-chevron">▾</span>
+      </div>
+      <div class="scene-body">
+        <div class="scene-cols">
+          <div class="scene-col"><h4>What Happens</h4><p>After Cassius dies following a battlefield misunderstanding, Brutus — his cause lost, his friends dead — asks servants to hold his sword so he may fall upon it. Antony delivers his famous eulogy.</p></div>
+          <div class="scene-col"><h4>Dramatic Significance</h4><p>Brutus's death receives the play's final moral judgment from his enemy. Antony's eulogy is the ultimate irony: the man who destroyed the conspirators grants their leader the honor they sought. The play ends not with triumph but with exhausted generosity.</p></div>
+          <div class="scene-col"><h4>Literary Connection</h4><p>Aristotle defined the tragic hero as a noble figure whose flaw leads to downfall in a way that produces catharsis. Brutus's death is a textbook enactment of that structure. Antony's eulogy is the moment of recognition — we are taught to mourn even the man whose mistake caused everything.</p></div>
+        </div>
+        <div class="scene-quote">"His life was gentle, and the elements so mixed in him that Nature might stand up and say to all the world: 'This was a man.'" — <em>Hyperbole + classical allusion; Antony's highest compliment is a definition of humanness itself.</em></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════ III. DICTION ANALYSIS ═══════════════════════════════════ -->
+<section id="diction">
+<div class="section-inner">
+  <p class="eyebrow reveal">III. Diction Analysis</p>
+  <h2 class="reveal">How Shakespeare's Language Creates Meaning</h2>
+  <div class="importance-box reveal">
+    <strong>Why Diction Analysis Matters</strong>
+    Diction — the specific choice of words and figurative language — is how Shakespeare turns plot into meaning. Every metaphor, irony, and rhetorical device is a deliberate decision that deepens characterization, advances theme, and shapes the audience's understanding. Below are eight key devices with labeled examples and connections to modern and historical contexts.
+  </div>
+
+  <div class="diction-grid">
+
+    <div class="diction-card reveal">
+      <div class="diction-card-tag">Device 01 · Metaphor</div>
+      <h3>The Serpent's Egg</h3>
+      <div class="diction-example">"And therefore think him as a serpent's egg / Which, hatched, would as his kind grow mischievous, / And kill him in the shell."
+        <cite>— Brutus, Act II Scene i</cite>
+      </div>
+      <p>Brutus uses an extended animal metaphor to justify preemptive murder: Caesar is an unhatched snake that must be destroyed before it can bite. The metaphor does psychological work — it distances Brutus emotionally from what he is actually planning, recasting assassination as pest management.</p>
+      <p><strong>Modern connection:</strong> The same metaphorical framework — "we must act before the threat matures" — has framed preemptive military actions from the Cuban Missile Crisis to 21st-century foreign policy debates. The <em>logic of the metaphor</em> shapes the logic of the policy.</p>
+    </div>
+
+    <div class="diction-card reveal">
+      <div class="diction-card-tag">Device 02 · Verbal Irony</div>
+      <h3>"Honorable Men"</h3>
+      <div class="diction-example">"Yet Brutus says he was ambitious; and Brutus is an honorable man."
+        <cite>— Antony, Act III Scene ii (repeated 7 times)</cite>
+      </div>
+      <p>Antony repeats this phrase seven times. With each repetition, surrounding context makes "honorable" less believable until the phrase has fully reversed itself — becoming the most damning insult in the play. This is verbal irony deployed as a <em>structural device</em>, not just a figure of speech.</p>
+      <p><strong>Literary parallel:</strong> This technique echoes Orwell's <em>Animal Farm</em> — "All animals are equal, but some animals are more equal than others" — where a phrase's moral emptiness is revealed through context rather than direct contradiction.</p>
+    </div>
+
+    <div class="diction-card reveal">
+      <div class="diction-card-tag">Device 03 · Personification</div>
+      <h3>Rome as a Living Body</h3>
+      <div class="diction-example">"Rome, thou hast lost the breed of noble bloods!"
+        <cite>— Cassius, Act I Scene ii</cite>
+      </div>
+      <p>Cassius personifies Rome as a body that is <em>suffering</em> under Caesar — implying the republic has a health and dignity that can be injured. This makes political abstraction physical and urgent. You cannot argue with an abstraction; you defend a body that is in pain.</p>
+      <p><strong>Historical connection:</strong> Political speeches throughout history invoke the nation as a living organism — this biological metaphor for the state appears in Plato, in French Revolutionary rhetoric, and in 20th-century nationalist movements as a tool for mobilizing emotional investment.</p>
+    </div>
+
+    <div class="diction-card reveal">
+      <div class="diction-card-tag">Device 04 · Allusion</div>
+      <h3>The Colossus of Rhodes</h3>
+      <div class="diction-example">"Why, man, he doth bestride the narrow world like a Colossus, and we petty men walk under his huge legs."
+        <cite>— Cassius, Act I Scene ii</cite>
+      </div>
+      <p>The Colossus of Rhodes — one of the Seven Wonders — was a giant statue said to straddle a harbor entrance. By comparing Caesar to it, Cassius imports a universally recognized symbol of overwhelming scale. The allusion elevates Caesar to mythic proportion while making Brutus feel small enough to manipulate.</p>
+      <p><strong>Modern connection:</strong> Political allusions work the same way today — invoking Lincoln, Churchill, or Hitler instantly imports a moral framework without argument. Allusion is shorthand for the weight of history.</p>
+    </div>
+
+    <div class="diction-card reveal">
+      <div class="diction-card-tag">Device 05 · Simile</div>
+      <h3>The Northern Star — Simile & Hubris</h3>
+      <div class="diction-example">"I am constant as the northern star, of whose true-fixed and resting quality there is no fellow in the firmament."
+        <cite>— Caesar, Act III Scene i (his final speech)</cite>
+      </div>
+      <p>Caesar compares himself to Polaris — the fixed point of the night sky. The simile conveys absolute certainty. Its dramatic irony is catastrophic: he is killed moments later, proving himself the <em>most</em> moveable thing in the play. Shakespeare uses the simile to show how hubris blinds — the more certain Caesar is, the more vulnerable he becomes.</p>
+      <p><strong>Literary parallel:</strong> This mirrors King Lear — another figure whose certainty of his own supremacy blinds him entirely to the fragility of what he holds.</p>
+    </div>
+
+    <div class="diction-card reveal">
+      <div class="diction-card-tag">Device 06 · Rhetorical Devices</div>
+      <h3>Anaphora — The Architecture of Persuasion</h3>
+      <div class="diction-example">"Who is here so base that would be a bondman?... Who is here so rude that would not be a Roman?... Who is here so vile that will not love his country?"
+        <cite>— Brutus, Act III Scene ii</cite>
+      </div>
+      <p>Brutus uses anaphora — the repetition of "Who is here so" — to build a rhetorical trap. Each question dares the crowd to identify as base, rude, or vile. Their silence becomes implied consent to the assassination. This is also a perfect example of <em>rhetorical question</em> used not to seek information but to engineer agreement.</p>
+      <p><strong>Modern connection:</strong> Political anaphora creates the same effect across eras — Churchill's "We shall fight," MLK's "I have a dream," and Obama's "Yes we can" all use repetition to build emotional momentum and manufacture collective identity.</p>
+    </div>
+
+    <div class="diction-card reveal">
+      <div class="diction-card-tag">Device 07 · Hyperbole</div>
+      <h3>The Dogs of War</h3>
+      <div class="diction-example">"Cry 'Havoc!' and let slip the dogs of war."
+        <cite>— Antony, Act III Scene i</cite>
+      </div>
+      <p>In four lines Antony invokes the goddess of ruin (Até), a monarch's voice, hell, and "dogs of war" — a cascade of hyperbole signaling he is thinking in mythological, civilization-scale terms. The assassination has not ended a threat; it has released something ancient and uncontrollable.</p>
+      <p><strong>Historical connection:</strong> The phrase "the dogs of war" entered the English language as a term for military conflict — used by Clausewitz, invoked in Cold War rhetoric, and serving as the title of a Frederick Forsyth novel. Shakespeare's hyperbole became a cultural fact.</p>
+    </div>
+
+    <div class="diction-card reveal">
+      <div class="diction-card-tag">Device 08 · Pun</div>
+      <h3>The Cobbler's Wordplay — Language as Battleground</h3>
+      <div class="diction-example">"Truly, sir, all that I live by is with the awl: I meddle with no tradesman's matters, nor women's matters, but with awl."
+        <cite>— The Cobbler, Act I Scene i</cite>
+      </div>
+      <p>The play opens with a pun: "awl" (a cobbler's tool) sounds like "all." The Cobbler also puns on "soles/souls" and "mend" (to repair shoes / to reform morals). Shakespeare's pun-heavy opening signals the play's central thesis: words, like soles and souls, can mean multiple things simultaneously, and power lies in controlling which meaning is heard.</p>
+      <p><strong>Thematic significance:</strong> This wordplay-as-introduction is deliberate contrast to the high political language that follows. From Cassius's manipulation to Antony's oration, control of language is control of Rome — and the Cobbler's opening jokes quietly announce that theme.</p>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- RESOURCES -->
+<section id="resources">
+<div class="section-inner">
+  <p class="eyebrow reveal">IV. Further Reading</p>
+  <h2 class="reveal">Useful Resources</h2>
+  <p class="section-lead reveal">These links provide primary texts, historical context, and critical analysis to support deeper study of the play.</p>
+  <div class="res-grid">
+    <a class="res-card reveal" href="https://www.folger.edu/explore/shakespeares-works/julius-caesar/read/" target="_blank" rel="noopener">
+      <span class="res-type">Primary Text</span>
+      <h3>Julius Caesar — Full Text (Folger Shakespeare Library)</h3>
+      <p>The authoritative edition with line numbers, notes, and annotations.</p>
+      <span class="res-arrow">↗</span>
+    </a>
+    <a class="res-card reveal" href="https://classics.mit.edu/Plutarch/caesar.html" target="_blank" rel="noopener">
+      <span class="res-type">Historical Source</span>
+      <h3>Plutarch's Life of Caesar</h3>
+      <p>Shakespeare's primary source. Compare Plutarch's account to see exactly what Shakespeare changed — and why.</p>
+      <span class="res-arrow">↗</span>
+    </a>
+    <a class="res-card reveal" href="https://www.sparknotes.com/shakespeare/juliuscaesar/" target="_blank" rel="noopener">
+      <span class="res-type">Study Guide</span>
+      <h3>SparkNotes — Julius Caesar</h3>
+      <p>Scene summaries, theme analysis, and character breakdowns for quick reference.</p>
+      <span class="res-arrow">↗</span>
+    </a>
+    <a class="res-card reveal" href="https://nosweatshakespeare.com/shakespeares-plays/julius-caesar/" target="_blank" rel="noopener">
+      <span class="res-type">Language Guide</span>
+      <h3>No Sweat Shakespeare — Modern Translation</h3>
+      <p>Side-by-side modern English translation. Especially helpful for the funeral speeches.</p>
+      <span class="res-arrow">↗</span>
+    </a>
+    <a class="res-card reveal" href="https://www.britannica.com/biography/Julius-Caesar-Roman-ruler" target="_blank" rel="noopener">
+      <span class="res-type">Historical Context</span>
+      <h3>Encyclopaedia Britannica — Julius Caesar</h3>
+      <p>Historical background on the real Caesar, the late Republic, and the political context of the assassination.</p>
+      <span class="res-arrow">↗</span>
+    </a>
+    <a class="res-card reveal" href="https://www.poetryfoundation.org/learn/glossary-terms" target="_blank" rel="noopener">
+      <span class="res-type">Literary Devices</span>
+      <h3>Poetry Foundation — Literary Glossary</h3>
+      <p>Definitions and examples of every device used in the play — metaphor, irony, anaphora, and more.</p>
+      <span class="res-arrow">↗</span>
+    </a>
+  </div>
+</div>
+</section>
+
+<footer>
+  <p>The Julius Caesar Project · Choice 12: Technology · Due April 7th</p>
+  <p>Character Analysis · Scene Analysis · Diction Analysis · Modern & Historical Connections</p>
+</footer>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const d=document.documentElement;
+  document.getElementById('prog').style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%';
+});
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){setTimeout(()=>e.target.classList.add('vis'),i*65);obs.unobserve(e.target)}
+  });
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+function showChar(id,btn){
+  document.querySelectorAll('.char-panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ctab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('char-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+function toggleScene(header){
+  const item=header.parentElement;
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.scene-item.open').forEach(i=>i.classList.remove('open'));
+  if(!isOpen)item.classList.add('open');
+}
+</script>
+</body>
+</html>
